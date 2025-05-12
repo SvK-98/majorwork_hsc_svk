@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Sukesh Education{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        border-radius: 15px;
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .dashboard-card .card-title {
+        color: var(--primary);
+        font-weight: 600;
+    }
+    
+    .dashboard-icon {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+    }
+    
+    .modal-body {
+        padding: 2rem;
+    }
+    
+    .modal-footer {
+        border-top: none;
+        padding: 1rem 2rem 1.5rem;
+    }
+    
+    .year-option {
+        display: inline-block;
+        padding: 1rem;
+        margin: 0.5rem;
+        text-align: center;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        cursor: pointer;
+        width: 45%;
+        transition: all 0.3s ease;
+    }
+    
+    .year-option:hover, .subject-option:hover {
+        border-color: var(--primary);
+        background-color: rgba(33, 37, 41, 0.05);
+    }
+    
+    .year-option.selected, .subject-option.selected {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    
+    .subject-option {
+        display: inline-block;
+        padding: 1rem;
+        margin: 0.5rem;
+        text-align: center;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        cursor: pointer;
+        width: 31%;
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="profile-header">
+            <h2>Welcome, {{ current_user.name or 'Student' }}!</h2>
+            <p class="lead mb-0">Here's your learning dashboard. Start exploring your subjects and resources.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="dashboard-icon">
+                    <i class="bi bi-book"></i>
+                </div>
+                <h5 class="card-title">My Subjects</h5>
+                <p class="card-text text-muted">Access your enrolled subjects and study materials.</p>
+                <a href="#" class="btn btn-primary">View Subjects</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="dashboard-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <h5 class="card-title">Schedule</h5>
+                <p class="card-text text-muted">Check your upcoming classes and assignments.</p>
+                <a href="#" class="btn btn-primary">View Schedule</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="dashboard-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h5 class="card-title">Progress</h5>
+                <p class="card-text text-muted">Track your learning progress and achievements.</p>
+                <a href="#" class="btn btn-primary">View Progress</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="dashboard-icon">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <h5 class="card-title">Resources</h5>
+                <p class="card-text text-muted">Access study materials, guides, and resources.</p>
+                <a href="#" class="btn btn-primary">Browse Resources</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="dashboard-icon">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <h5 class="card-title">Profile</h5>
+                <p class="card-text text-muted">Year Level: <span id="display-year-level">{{ current_user.year_level or 'Not set' }}</span></p>
+                <p class="card-text text-muted">HSC Subjects: <span id="display-subjects">{{ current_user.hsc_subjects or 'None selected' }}</span></p>
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#yearLevelModal">Update Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Year Level Modal -->
+<div class="modal fade" id="yearLevelModal" tabindex="-1" aria-labelledby="yearLevelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="yearLevelModalLabel">Select Your Year Level</h5>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-4">Please select your current year level:</p>
+                <div class="year-options">
+                    <div class="year-option" data-year="Year 11">Year 11</div>
+                    <div class="year-option" data-year="Year 12">Year 12</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="yearNextBtn" disabled>Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HSC Subjects Modal -->
+<div class="modal fade" id="subjectsModal" tabindex="-1" aria-labelledby="subjectsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subjectsModalLabel">Select Your HSC Subjects</h5>
+            </div>
+            <div class="modal-body">
+                <p class="mb-4">Please select all the HSC subjects you are currently undertaking:</p>
+                <div class="subject-options">
+                    <div class="subject-option" data-subject="Business Studies">Business Studies</div>
+                    <div class="subject-option" data-subject="English">English</div>
+                    <div class="subject-option" data-subject="Maths">Maths</div>
+                    <div class="subject-option" data-subject="Economics">Economics</div>
+                    <div class="subject-option" data-subject="Software Engineering">Software Engineering</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#yearLevelModal">Back</button>
+                <button type="button" class="btn btn-primary" id="saveSubjectsBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+// Store CSRF token for AJAX requests
+const csrfToken = "{{ csrf_token() }}";
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user has year level and subjects set
+    const hasYearLevel = "{{ current_user.year_level }}" !== "";
+    const hasSubjects = "{{ current_user.hsc_subjects }}" !== "";
+    
+    // If either is not set, show the year level modal automatically
+    if (!hasYearLevel || !hasSubjects) {
+        const yearLevelModal = new bootstrap.Modal(document.getElementById('yearLevelModal'));
+        yearLevelModal.show();
+    }
+    
+    // Year level selection
+    const yearOptions = document.querySelectorAll('.year-option');
+    const yearNextBtn = document.getElementById('yearNextBtn');
+    let selectedYear = null;
+    
+    yearOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            yearOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedYear = this.getAttribute('data-year');
+            yearNextBtn.disabled = false;
+        });
+    });
+    
+    yearNextBtn.addEventListener('click', function() {
+        const yearLevelModal = bootstrap.Modal.getInstance(document.getElementById('yearLevelModal'));
+        yearLevelModal.hide();
+        
+        const subjectsModal = new bootstrap.Modal(document.getElementById('subjectsModal'));
+        subjectsModal.show();
+    });
+    
+    // Subject selection
+    const subjectOptions = document.querySelectorAll('.subject-option');
+    const saveSubjectsBtn = document.getElementById('saveSubjectsBtn');
+    let selectedSubjects = [];
+    
+    subjectOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            
+            const subject = this.getAttribute('data-subject');
+            if (this.classList.contains('selected')) {
+                selectedSubjects.push(subject);
+            } else {
+                selectedSubjects = selectedSubjects.filter(s => s !== subject);
+            }
+        });
+    });
+    
+    saveSubjectsBtn.addEventListener('click', function() {
+        // Make AJAX request to save selections
+        fetch('{{ url_for("save_profile") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                year_level: selectedYear,
+                hsc_subjects: selectedSubjects.join(', ')
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the display on the page
+                document.getElementById('display-year-level').textContent = selectedYear;
+                document.getElementById('display-subjects').textContent = selectedSubjects.join(', ');
+                
+                // Hide the modal
+                const subjectsModal = bootstrap.Modal.getInstance(document.getElementById('subjectsModal'));
+                subjectsModal.hide();
+                
+                // Show success message
+                alert('Profile updated successfully!');
+            } else {
+                alert('Error saving profile: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving your profile.');
+        });
+    });
+});
+</script>
+{% endblock %}

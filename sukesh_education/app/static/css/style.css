@@ -1,0 +1,500 @@
+/* Sukesh Education - Custom Styles */
+
+:root {
+    /* Color Palette - Light Theme */
+    --primary: #212529;       /* Primary - Black (replaced blue) */
+    --primary-dark: #000000;  /* Primary Dark - Deeper Black */
+    --secondary: #7209b7;     /* Secondary - Purple */
+    --accent: #f72585;        /* Accent - Bright Pink */
+    --light: #f8f9fa;         /* Light Background */
+    --dark: #212529;          /* Dark Text */
+    --success: #4cc9f0;       /* Success - Light Blue */
+    --warning: #f8961e;       /* Warning - Orange */
+    --danger: #f94144;        /* Danger - Red */
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    
+    /* Background and text colors for theme switching */
+    --bg-body: #f5f7fa;
+    --bg-card: #ffffff;
+    --bg-navbar: #ffffff;
+    --text-main: #212529;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    
+    /* Desktop specific */
+    --titlebar-height: 32px;
+    --window-padding: 0;
+    
+    /* Transition for smooth theme switching */
+    --theme-transition: all 0.3s ease;
+}
+
+/* Dark Theme Variables */
+.dark-theme {
+    /* Background and text colors */
+    --bg-body: #121212;       /* Dark background */
+    --bg-card: #1e1e1e;       /* Card/elevated background */
+    --bg-navbar: #1a1a1a;     /* Navbar background */
+    --text-main: #ffffff;     /* Main text */
+    --text-muted: #b0b0b0;    /* Muted/secondary text */
+    --border-color: #333333;  /* Border color */
+    
+    /* Keep accent colors the same or adjust slightly */
+    --primary: #000000;       /* Primary - Pure Black */
+    --primary-dark: #000000;  /* Primary Dark - Pure Black */
+    --secondary: #7209b7;     /* Secondary - Purple */
+    --accent: #f72585;        /* Accent - Bright Pink */
+    --border-color: #333333;   /* Border color */
+    --nav-height: 64px;        /* Navigation height */
+    
+    /* Accent colors for dark theme */
+    --accent-gradient: linear-gradient(135deg, #4361ee 0%, #7209b7 50%, #f72585 100%);
+    --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    --highlight: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa;
+    color: var(--dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Theme Styles */
+body.dark-theme {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Navigation */
+.navbar {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 1.4rem;
+    transition: color 0.3s ease;
+}
+
+.navbar-brand img {
+    filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.1));
+    transition: filter 0.3s ease;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: var(--dark);
+    font-weight: 500;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    transition: color 0.2s ease;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: var(--primary);
+}
+
+/* Dark Theme Navigation */
+.dark-theme .navbar {
+    background-color: var(--bg-secondary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-color);
+    height: var(--nav-height);
+}
+
+.dark-theme .navbar-brand {
+    color: var(--text-primary);
+}
+
+.dark-theme .navbar-brand img {
+    filter: brightness(1.2) drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.dark-theme .navbar-light .navbar-nav .nav-link {
+    color: var(--text-secondary);
+}
+
+.dark-theme .navbar-light .navbar-nav .nav-link:hover {
+    color: var(--text-primary);
+}
+
+.dark-theme .navbar-light .navbar-toggler {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+/* Modern Navigation Elements */
+.navbar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-search input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 20px;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    color: inherit;
+    transition: all 0.3s;
+    width: 200px;
+}
+
+.dark-theme .navbar-search input {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.navbar-search input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.15);
+    width: 250px;
+}
+
+.dark-theme .navbar-search input:focus {
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--text-secondary);
+}
+
+/* Authentication Cards */
+.auth-card {
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card .card-title {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Form Controls */
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--gray-300);
+    font-size: 1rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+    border-color: var(--primary);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.2);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: none !important;
+}
+
+/* Links */
+a {
+    color: var(--primary);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* Footer */
+.footer {
+    background-color: white;
+    border-top: 1px solid var(--gray-200);
+    margin-top: auto;
+}
+
+.footer a {
+    color: var(--gray-600);
+    text-decoration: none;
+    margin: 0 0.5rem;
+    font-size: 0.9rem;
+}
+
+.footer a:hover {
+    color: var(--primary);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: var(--success);
+}
+
+.alert-info {
+    border-left-color: var(--primary);
+}
+
+.alert-warning {
+    border-left-color: var(--warning);
+}
+
+.alert-danger {
+    border-left-color: var(--danger);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .auth-card {
+        margin: 0 10px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+/* Desktop Application Specific Styles */
+.desktop-mode {
+    /* Body styles when running in desktop mode */
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+}
+
+.desktop-mode .container {
+    max-width: 95%;
+    padding: 0 20px;
+}
+
+.desktop-mode .navbar {
+    padding-left: 15px;
+    padding-right: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.desktop-mode .auth-card {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.desktop-mode .auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.desktop-mode .btn {
+    transition: all 0.3s ease;
+}
+
+.desktop-mode .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(67, 97, 238, 0.25);
+}
+
+.desktop-version-tag {
+    font-size: 0.85rem;
+    padding: 0.35em 0.85em;
+    border-radius: 30px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
+    animation: pulse 2s infinite;
+    display: inline-block;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle i {
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-theme .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .theme-toggle i.bi-moon-fill {
+    display: none;
+}
+
+.dark-theme .theme-toggle i.bi-sun-fill {
+    display: inline-block;
+}
+
+.theme-toggle i.bi-sun-fill {
+    display: none;
+}
+
+.theme-toggle i.bi-moon-fill {
+    display: inline-block;
+}
+
+/* Dark Theme Card Styles */
+.dark-theme .card {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .card-title {
+    color: var(--primary);
+}
+
+.dark-theme .text-muted {
+    color: var(--text-muted) !important;
+}
+
+.dark-theme .form-control {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-main);
+}
+
+.dark-theme .form-control:focus {
+    background-color: var(--bg-card);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.2);
+}
+
+.dark-theme .footer {
+    background-color: var(--bg-navbar);
+    border-color: var(--border-color);
+}
+
+.dark-theme .footer a {
+    color: var(--text-muted);
+}
+
+/* Dark Theme Scrollbar */
+.dark-theme ::-webkit-scrollbar-track {
+    background-color: var(--bg-body);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(114, 9, 183, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(114, 9, 183, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(114, 9, 183, 0);
+    }
+}
+
+.window-titlebar {
+    height: var(--titlebar-height);
+    background-color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    -webkit-app-region: drag; /* For Electron compatibility */
+}
+
+.window-titlebar .titlebar-title {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.window-titlebar .titlebar-controls {
+    display: flex;
+    -webkit-app-region: no-drag; /* For Electron compatibility */
+}
+
+.window-titlebar .titlebar-controls button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.window-titlebar .titlebar-controls button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--gray-400);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--gray-500);
+}
