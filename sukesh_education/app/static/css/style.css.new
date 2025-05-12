@@ -45,13 +45,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: opacity 0.3s ease;
-}
-
-/* Page transitions and animations */
-.fade-out {
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 /* Navigation */
@@ -427,40 +420,4 @@ body {
 .subject-item.selected {
     background-color: var(--primary);
     color: white;
-}
-
-/* My Subjects page specific styles */
-.topic-link {
-    position: relative;
-    overflow: hidden;
-}
-
-.topic-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-    transition: width 0.3s ease;
-}
-
-.topic-link:hover::after {
-    width: 100%;
-}
-
-/* Card hover effects */
-.subject-card:hover .see-all-link {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-
-/* Emoji animation on hover */
-.topic-emoji {
-    display: inline-block;
-    transition: transform 0.3s ease;
-}
-
-.topic-link:hover .topic-emoji {
-    transform: scale(1.2) rotate(5deg);
 }

@@ -163,15 +163,11 @@ def main():
         logger.info("Creating window")
         # Remove title from window_settings since we pass it directly
         window_title = window_settings.pop('title')
-        
-        # Log the exact URL being passed to webview.create_window
-        logger.info(f"Passing URL to webview.create_window: {url}")
-        
         window = webview.create_window(window_title, url, **window_settings)
         
         # Create and expose API to JavaScript
         api = WindowAPI(window)
-        window.expose(api)
+        window.expose(api.minimize_window, api.get_system_info)
         
         # Start the desktop application
         logger.info("Starting desktop application")

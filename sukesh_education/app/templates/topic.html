@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic }} | {{ subject }} | Sukesh Education{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page transition animation */
+    .topic-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .topic-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .topic-card {
+        border-radius: 15px;
+        border: none;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+    }
+    
+    .topic-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .topic-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+    
+    .topic-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-main);
+    }
+    
+    .topic-section {
+        margin-bottom: 2rem;
+    }
+    
+    .navigation-buttons {
+        margin-top: 2rem;
+    }
+    
+    .btn-outline-primary {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="topic-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="topic-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0">{{ topic }}</h2>
+                        <p class="lead mb-0">{{ subject }}</p>
+                    </div>
+                    <a href="{{ url_for('my_subjects') }}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Back to Subjects
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="topic-card">
+                <h1 class="topic-title">{{ topic }}</h1>
+                <h3 class="topic-subtitle">{{ subject }} Course Material</h3>
+                
+                <div class="topic-section">
+                    <h4>Introduction</h4>
+                    <p class="topic-content">
+                        Welcome to the {{ topic }} course in {{ subject }}! This is a placeholder content that will be replaced with actual learning material in the future. For now, you're viewing a template of how the course content will be structured.
+                    </p>
+                </div>
+                
+                <div class="topic-section">
+                    <h4>Learning Objectives</h4>
+                    <p class="topic-content">
+                        After completing this course, students will be able to:
+                    </p>
+                    <ul class="topic-content">
+                        <li>Understand key concepts and principles of {{ topic }}</li>
+                        <li>Apply {{ topic }} knowledge to solve real-world problems</li>
+                        <li>Analyze and evaluate various approaches in {{ topic }}</li>
+                        <li>Develop critical thinking skills in the context of {{ subject }}</li>
+                    </ul>
+                </div>
+                
+                <div class="topic-section">
+                    <h4>Course Content</h4>
+                    <p class="topic-content">
+                        The actual course content will be added here. This will include video lessons, reading materials, practice exercises, and assessments. Stay tuned for updates!
+                    </p>
+                </div>
+                
+                <div class="navigation-buttons d-flex justify-content-between">
+                    <a href="{{ url_for('my_subjects') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> Back to All Subjects
+                    </a>
+                    <a href="#" class="btn btn-primary">
+                        Next Topic <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add fade-in animation when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const topicContainer = document.querySelector('.topic-container');
+        topicContainer.style.opacity = 0;
+        
+        setTimeout(() => {
+            topicContainer.style.opacity = 1;
+        }, 100);
+    });
+</script>
+{% endblock %}

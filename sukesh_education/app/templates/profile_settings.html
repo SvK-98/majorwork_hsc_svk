@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings | Sukesh Education{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page transition animation */
+    .profile-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-card {
+        border-radius: 15px;
+        border: none;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .profile-card .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+    }
+    
+    .profile-card .card-body {
+        padding: 1.8rem;
+    }
+    
+    .profile-card h5 {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-action {
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+    
+    .form-control.is-invalid {
+        background-image: none;
+    }
+    
+    .invalid-feedback {
+        font-size: 0.85rem;
+    }
+    
+    .password-field-wrapper {
+        position: relative;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6c757d;
+        border: none;
+        background: none;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        color: var(--text-main);
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--gray-600);
+        margin: 0 auto 1.5rem;
+        overflow: hidden;
+    }
+    
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .avatar-upload {
+        position: relative;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .file-upload {
+        display: none;
+    }
+    
+    .avatar-edit-label {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="profile-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0">Profile Settings</h2>
+                        <p class="lead mb-0">Manage your personal information and preferences</p>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card profile-card text-center">
+                <div class="card-body">
+                    <div class="avatar-upload mb-3">
+                        <div class="profile-avatar">
+                            {% if current_user.profile_picture %}
+                                <img src="{{ current_user.profile_picture }}" alt="Profile Picture">
+                            {% else %}
+                                <i class="bi bi-person"></i>
+                            {% endif %}
+                        </div>
+                        <label for="profile-pic" class="avatar-edit-label">
+                            <i class="bi bi-camera"></i>
+                        </label>
+                        <input type="file" id="profile-pic" class="file-upload" accept="image/*">
+                    </div>
+                    <h5 class="mb-1">{{ current_user.name or 'Unknown' }}</h5>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                </div>
+            </div>
+            
+            <div class="list-group profile-nav">
+                <a href="#personal-info" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
+                    <i class="bi bi-person me-2"></i> Personal Information
+                </a>
+                <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                    <i class="bi bi-shield-lock me-2"></i> Security
+                </a>
+                <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                    <i class="bi bi-bell me-2"></i> Notifications
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <div class="card profile-card">
+                <div class="card-body p-0">
+                    <div class="tab-content">
+                        <!-- Personal Information Tab -->
+                        <div class="tab-pane fade show active p-4" id="personal-info">
+                            <h4 class="mb-4">Personal Information</h4>
+                            
+                            <form method="POST" action="{{ url_for('main.profile_settings') }}">
+                                {{ profile_form.hidden_tag() }}
+                                
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        {{ profile_form.name.label(class="form-label") }}
+                                        {{ profile_form.name(class="form-control" + (" is-invalid" if profile_form.name.errors else "")) }}
+                                        {% if profile_form.name.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in profile_form.name.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" value="{{ current_user.email }}" readonly>
+                                        <small class="text-muted">Email cannot be changed</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        {{ profile_form.phone_number.label(class="form-label") }}
+                                        {{ profile_form.phone_number(class="form-control" + (" is-invalid" if profile_form.phone_number.errors else ""), placeholder="+1 (555) 123-4567") }}
+                                        {% if profile_form.phone_number.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in profile_form.phone_number.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group">
+                                        {{ profile_form.date_of_birth.label(class="form-label") }}
+                                        {{ profile_form.date_of_birth(class="form-control" + (" is-invalid" if profile_form.date_of_birth.errors else "")) }}
+                                        {% if profile_form.date_of_birth.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in profile_form.date_of_birth.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ profile_form.address.label(class="form-label") }}
+                                    {{ profile_form.address(class="form-control" + (" is-invalid" if profile_form.address.errors else ""), rows="3", placeholder="Enter your full address") }}
+                                    {% if profile_form.address.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in profile_form.address.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ profile_form.bio.label(class="form-label") }}
+                                    {{ profile_form.bio(class="form-control" + (" is-invalid" if profile_form.bio.errors else ""), rows="4", placeholder="Tell us about yourself") }}
+                                    {% if profile_form.bio.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in profile_form.bio.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-action">Cancel</a>
+                                    {{ profile_form.submit(class="btn btn-primary btn-action") }}
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Security Tab -->
+                        <div class="tab-pane fade p-4" id="security">
+                            <h4 class="mb-4">Security Settings</h4>
+                            
+                            <form method="POST" action="{{ url_for('main.profile_settings') }}">
+                                {{ password_form.hidden_tag() }}
+                                
+                                <h5 class="mb-3">Change Password</h5>
+                                
+                                <div class="form-group">
+                                    {{ password_form.current_password.label(class="form-label") }}
+                                    <div class="password-field-wrapper">
+                                        {{ password_form.current_password(class="form-control" + (" is-invalid" if password_form.current_password.errors else "")) }}
+                                        <button type="button" class="password-toggle" data-target="current_password">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if password_form.current_password.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in password_form.current_password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ password_form.new_password.label(class="form-label") }}
+                                    <div class="password-field-wrapper">
+                                        {{ password_form.new_password(class="form-control" + (" is-invalid" if password_form.new_password.errors else "")) }}
+                                        <button type="button" class="password-toggle" data-target="new_password">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if password_form.new_password.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in password_form.new_password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="password-strength mt-2" id="password-strength"></div>
+                                    <small class="text-muted">Password must be at least 8 characters long</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ password_form.confirm_new_password.label(class="form-label") }}
+                                    <div class="password-field-wrapper">
+                                        {{ password_form.confirm_new_password(class="form-control" + (" is-invalid" if password_form.confirm_new_password.errors else "")) }}
+                                        <button type="button" class="password-toggle" data-target="confirm_new_password">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if password_form.confirm_new_password.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in password_form.confirm_new_password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-outline-secondary btn-action" data-bs-toggle="tab" data-bs-target="#personal-info">Back</button>
+                                    {{ password_form.submit_password(class="btn btn-primary btn-action") }}
+                                </div>
+                            </form>
+                            
+                            <hr class="my-4">
+                            
+                            <h5 class="mb-3 text-danger">Danger Zone</h5>
+                            <p>Once you delete your account, there is no going back. Please be certain.</p>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                Delete Account
+                            </button>
+                        </div>
+                        
+                        <!-- Notification Settings Tab -->
+                        <div class="tab-pane fade p-4" id="notifications">
+                            <h4 class="mb-4">Notification Settings</h4>
+                            
+                            <form id="notificationForm">
+                                <div class="form-group">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                        <label class="form-check-label" for="emailNotifications">
+                                            <span class="fw-medium">Email Notifications</span>
+                                            <p class="text-muted small mb-0">Receive emails about your account activity</p>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="assignmentNotifications" checked>
+                                        <label class="form-check-label" for="assignmentNotifications">
+                                            <span class="fw-medium">Assignment Updates</span>
+                                            <p class="text-muted small mb-0">Get notified when assignments are posted or due</p>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="courseUpdates" checked>
+                                        <label class="form-check-label" for="courseUpdates">
+                                            <span class="fw-medium">Course Updates</span>
+                                            <p class="text-muted small mb-0">Receive notifications about course changes</p>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="marketingEmails">
+                                        <label class="form-check-label" for="marketingEmails">
+                                            <span class="fw-medium">Marketing Emails</span>
+                                            <p class="text-muted small mb-0">Receive newsletters and promotional content</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-outline-secondary btn-action" data-bs-toggle="tab" data-bs-target="#personal-info">Back</button>
+                                    <button type="button" id="saveNotificationsBtn" class="btn btn-primary btn-action">Save Preferences</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteAccountModalLabel">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <p>Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.</p>
+                <div class="alert alert-warning">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmDelete">
+                        <label class="form-check-label" for="confirmDelete">
+                            I understand that this action is permanent
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteAccountBtn" disabled>Delete Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle-fill me-2"></i> <span id="toastMessage">Changes saved successfully!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password toggle (show/hide)
+    document.querySelectorAll('.password-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = button.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    });
+    
+    // Password strength check
+    const newPasswordInput = document.getElementById('new_password');
+    const strengthIndicator = document.getElementById('password-strength');
+    
+    if (newPasswordInput && strengthIndicator) {
+        newPasswordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) strength += 1;
+            
+            // Contains lowercase
+            if (/[a-z]/.test(password)) strength += 1;
+            
+            // Contains uppercase
+            if (/[A-Z]/.test(password)) strength += 1;
+            
+            // Contains number
+            if (/[0-9]/.test(password)) strength += 1;
+            
+            // Contains special char
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            
+            strengthIndicator.innerHTML = '';
+            
+            if (password.length === 0) {
+                strengthIndicator.innerHTML = '';
+                return;
+            }
+            
+            let strengthClass, strengthText;
+            
+            switch(strength) {
+                case 1:
+                    strengthClass = 'bg-danger';
+                    strengthText = 'Very Weak';
+                    break;
+                case 2:
+                    strengthClass = 'bg-warning';
+                    strengthText = 'Weak';
+                    break;
+                case 3:
+                    strengthClass = 'bg-info';
+                    strengthText = 'Medium';
+                    break;
+                case 4:
+                    strengthClass = 'bg-primary';
+                    strengthText = 'Strong';
+                    break;
+                case 5:
+                    strengthClass = 'bg-success';
+                    strengthText = 'Very Strong';
+                    break;
+            }
+            
+            strengthIndicator.innerHTML = `
+                <div class="progress" style="height: 5px">
+                    <div class="progress-bar ${strengthClass}" role="progressbar" style="width: ${strength * 20}%" aria-valuenow="${strength * 20}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span class="small ${strengthClass === 'bg-danger' || strengthClass === 'bg-warning' ? 'text-danger' : 'text-success'} mt-1 d-inline-block">${strengthText}</span>
+            `;
+        });
+    }
+    
+    // Delete account confirmation checkbox
+    const confirmDeleteCheckbox = document.getElementById('confirmDelete');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    
+    if (confirmDeleteCheckbox && deleteAccountBtn) {
+        confirmDeleteCheckbox.addEventListener('change', function() {
+            deleteAccountBtn.disabled = !this.checked;
+        });
+    }
+    
+    // Notification preferences
+    const saveNotificationsBtn = document.getElementById('saveNotificationsBtn');
+    
+    if (saveNotificationsBtn) {
+        saveNotificationsBtn.addEventListener('click', function() {
+            const preferences = {
+                email: document.getElementById('emailNotifications').checked,
+                assignments: document.getElementById('assignmentNotifications').checked,
+                courseUpdates: document.getElementById('courseUpdates').checked,
+                marketing: document.getElementById('marketingEmails').checked
+            };
+            
+            // Save notification preferences
+            fetch('{{ url_for("main.save_notification_preferences") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(preferences)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success toast
+                    const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                    document.getElementById('toastMessage').textContent = 'Notification preferences saved!';
+                    toast.show();
+                } else {
+                    alert('Error saving notification preferences: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    }
+    
+    // Profile picture upload
+    const profilePicInput = document.getElementById('profile-pic');
+    const profileAvatar = document.querySelector('.profile-avatar');
+    
+    if (profilePicInput && profileAvatar) {
+        profilePicInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    profileAvatar.innerHTML = `<img src="${e.target.result}" alt="Profile Picture">`;
+                    
+                    // Upload the image to the server
+                    uploadProfilePicture(profilePicInput.files[0]);
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+    
+    // Function to upload profile picture
+    function uploadProfilePicture(file) {
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        
+        fetch('{{ url_for("main.upload_profile_picture") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('toastMessage').textContent = 'Profile picture uploaded successfully!';
+                const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                toast.show();
+            } else {
+                alert('Error uploading profile picture: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+    
+    // Tab handling from sidebar
+    document.querySelectorAll('.profile-nav a').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            document.querySelectorAll('.profile-nav a').forEach(navLink => {
+                navLink.classList.remove('active');
+            });
+            
+            this.classList.add('active');
+            
+            const tabId = this.getAttribute('href');
+            const tabElement = document.querySelector(tabId);
+            
+            if (tabElement) {
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                tabElement.classList.add('show', 'active');
+            }
+        });
+    });
+    
+    // Flash messages display
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                const toastEl = document.getElementById('successToast');
+                if (toastEl) {
+                    toastEl.classList.remove('bg-success', 'bg-danger');
+                    toastEl.classList.add('bg-{{ "success" if category == "success" else "danger" }}');
+                    document.getElementById('toastMessage').textContent = '{{ message }}';
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+});
+</script>
+{% endblock %}

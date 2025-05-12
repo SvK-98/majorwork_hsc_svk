@@ -1,65 +1,16 @@
 // Sukesh Education - Custom scripts
 
-// Theme management functions
-function setTheme(themeName) {
-    localStorage.setItem('theme', themeName);
-    document.body.className = themeName;
-    
-    // Update icon based on theme
-    const themeToggleBtn = document.getElementById('themeToggle');
-    if (themeToggleBtn) {
-        const moonIcon = themeToggleBtn.querySelector('.bi-moon-fill');
-        const sunIcon = themeToggleBtn.querySelector('.bi-sun-fill');
-        
-        if (!moonIcon || !sunIcon) {
-            // If icons don't exist, create them
-            themeToggleBtn.innerHTML = `
-                <i class="bi bi-moon-fill"></i>
-                <i class="bi bi-sun-fill"></i>
-            `;
-        }
-    }
-}
-
-function toggleTheme() {
-    if (localStorage.getItem('theme') === 'dark-theme') {
-        setTheme('');
-    } else {
-        setTheme('dark-theme');
-    }
-}
-
-// Check for saved theme preference or respect OS setting
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    
-    if (savedTheme) {
-        // Use saved preference
-        setTheme(savedTheme);
-    } else {
-        // Check if OS is set to dark mode
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (prefersDarkScheme) {
-            setTheme('dark-theme');
-        } else {
-            setTheme('');
-        }
-    }
+// Set up light mode (no theme switching)
+function ensureLightMode() {
+    // Clear any saved theme
+    localStorage.removeItem('theme');
+    // Ensure body has no theme class
+    document.body.className = '';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Load saved theme
-    loadTheme();
-    
-    // Setup theme toggle button
-    const themeToggleBtn = document.getElementById('themeToggle');
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleTheme();
-        });
-    }
+    // Ensure light mode is set
+    ensureLightMode();
     
     // Check if we're running in desktop mode (using pywebview)
     const isDesktop = window.navigator.userAgent.includes('pywebview');

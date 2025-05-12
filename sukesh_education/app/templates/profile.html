@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile | Sukesh Education{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- Add CSRF token for form submissions -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page transition animation */
+    .profile-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-card {
+        border-radius: 15px;
+        border: none;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .profile-card .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+    }
+    
+    .profile-card .card-body {
+        padding: 1.8rem;
+    }
+    
+    .profile-card h5 {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    /* Form styling */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.1);
+    }
+    
+    .checkbox-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .checkbox-list .form-check {
+        min-width: 45%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="profile-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0">My Profile</h2>
+                        <p class="lead mb-0">Manage your personal information and preferences</p>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card profile-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="personalInfoForm">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name or '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" readonly>
+                            <small class="text-muted">Your email address cannot be changed</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" value="{{ current_user.date_of_birth.strftime('%Y-%m-%d') if current_user.date_of_birth else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ current_user.phone_number or '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ current_user.address or '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4">{{ current_user.bio or '' }}</textarea>
+                            <small class="text-muted">Tell us a bit about yourself</small>
+                        </div>
+                        
+                        <button type="button" id="savePersonalInfoBtn" class="btn btn-primary">Save Information</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card profile-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Academic Preferences</h5>
+                </div>
+                <div class="card-body">
+                    <form id="subjectsForm">
+                        <div class="form-group">
+                            <label class="form-label">Your Subjects</label>
+                            <p class="text-muted">Select all subjects you're interested in:</p>
+                            
+                            <div class="checkbox-list">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="math" name="subjects" value="Math" 
+                                        {{ 'checked' if current_user.hsc_subjects and 'Math' in current_user.hsc_subjects.split(',') else '' }}>
+                                    <label class="form-check-label" for="math">
+                                        <span class="subject-emoji">📊</span> Mathematics
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="software" name="subjects" value="Software" 
+                                        {{ 'checked' if current_user.hsc_subjects and 'Software' in current_user.hsc_subjects.split(',') else '' }}>
+                                    <label class="form-check-label" for="software">
+                                        <span class="subject-emoji">💻</span> Software
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="english" name="subjects" value="English" 
+                                        {{ 'checked' if current_user.hsc_subjects and 'English' in current_user.hsc_subjects.split(',') else '' }}>
+                                    <label class="form-check-label" for="english">
+                                        <span class="subject-emoji">📚</span> English
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="business" name="subjects" value="Business Studies" 
+                                        {{ 'checked' if current_user.hsc_subjects and 'Business Studies' in current_user.hsc_subjects.split(',') else '' }}>
+                                    <label class="form-check-label" for="business">
+                                        <span class="subject-emoji">📈</span> Business Studies
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="economics" name="subjects" value="Economics" 
+                                        {{ 'checked' if current_user.hsc_subjects and 'Economics' in current_user.hsc_subjects.split(',') else '' }}>
+                                    <label class="form-check-label" for="economics">
+                                        <span class="subject-emoji">💰</span> Economics
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="physics" name="subjects" value="Physics" 
+                                        {{ 'checked' if current_user.hsc_subjects and 'Physics' in current_user.hsc_subjects.split(',') else '' }}>
+                                    <label class="form-check-label" for="physics">
+                                        <span class="subject-emoji">⚡</span> Physics
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="saveSubjectsBtn" class="btn btn-primary">Update Subjects</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle-fill me-2"></i> <span id="toastMessage">Changes saved successfully!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle subject form submission
+        document.getElementById('saveSubjectsBtn').addEventListener('click', function() {
+            const selectedSubjects = [];
+            document.querySelectorAll('input[name="subjects"]:checked').forEach(checkbox => {
+                selectedSubjects.push(checkbox.value);
+            });
+            
+            saveSubjects(selectedSubjects);
+        });
+        
+        // Handle personal info form submission
+        document.getElementById('savePersonalInfoBtn').addEventListener('click', function() {
+            const formData = {
+                name: document.getElementById('name').value,
+                date_of_birth: document.getElementById('dateOfBirth').value,
+                phone_number: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                bio: document.getElementById('bio').value
+            };
+            
+            savePersonalInfo(formData);
+        });
+        
+        // Function to save subjects
+        function saveSubjects(subjects) {
+            fetch('/save-subjects', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    subjects: subjects
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Subject preferences saved successfully!');
+                } else {
+                    alert('Error saving subject preferences: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+        
+        // Function to save personal info
+        function savePersonalInfo(data) {
+            fetch('/save-profile-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Personal information updated successfully!');
+                } else {
+                    alert('Error saving information: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+        
+        // Function to show toast message
+        function showToast(message) {
+            document.getElementById('toastMessage').textContent = message;
+            const toast = new bootstrap.Toast(document.getElementById('successToast'));
+            toast.show();
+        }
+    });
+</script>
+{% endblock %}

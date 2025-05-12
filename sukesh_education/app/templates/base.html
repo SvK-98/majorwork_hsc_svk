@@ -44,6 +44,9 @@
                             <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.profile_settings') }}">Profile</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                         </li>
                     {% else %}
@@ -54,14 +57,6 @@
                             <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
                         </li>
                     {% endif %}
-                    
-                    <!-- Theme toggle button -->
-                    <li class="nav-item">
-                        <a class="nav-link theme-toggle" href="#" id="themeToggle" title="Toggle Dark/Light Mode">
-                            <i class="bi bi-moon-fill"></i>
-                            <i class="bi bi-sun-fill"></i>
-                        </a>
-                    </li>
                     
                     <!-- Desktop window controls - hidden by default, shown via JS when in desktop mode -->
                     <li class="nav-item desktop-controls d-none">

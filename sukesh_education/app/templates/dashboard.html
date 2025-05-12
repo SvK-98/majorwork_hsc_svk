@@ -136,7 +136,7 @@
                 </div>
                 <h5 class="card-title">My Subjects</h5>
                 <p class="card-text text-muted">Access your enrolled subjects and study materials.</p>
-                <a href="#" class="btn btn-primary">View Subjects</a>
+                <a href="{{ url_for('my_subjects') }}" class="btn btn-primary">View Subjects</a>
             </div>
         </div>
     </div>
@@ -189,9 +189,8 @@
                     <i class="bi bi-person-circle"></i>
                 </div>
                 <h5 class="card-title">Profile</h5>
-                <p class="card-text text-muted">Year Level: <span id="display-year-level">{{ current_user.year_level or 'Not set' }}</span></p>
-                <p class="card-text text-muted">HSC Subjects: <span id="display-subjects">{{ current_user.hsc_subjects or 'None selected' }}</span></p>
-                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#yearLevelModal">Update Profile</a>
+                <p class="card-text text-muted">Manage your personal information, security settings, and notifications.</p>
+                <a href="{{ url_for('main.profile_settings') }}" class="btn btn-primary">Manage Profile</a>
             </div>
         </div>
     </div>
@@ -250,91 +249,103 @@
 const csrfToken = "{{ csrf_token() }}";
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user has year level and subjects set
-    const hasYearLevel = "{{ current_user.year_level }}" !== "";
-    const hasSubjects = "{{ current_user.hsc_subjects }}" !== "";
-    
-    // If either is not set, show the year level modal automatically
-    if (!hasYearLevel || !hasSubjects) {
-        const yearLevelModal = new bootstrap.Modal(document.getElementById('yearLevelModal'));
-        yearLevelModal.show();
-    }
-    
     // Year level selection
     const yearOptions = document.querySelectorAll('.year-option');
     const yearNextBtn = document.getElementById('yearNextBtn');
     let selectedYear = null;
     
-    yearOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            yearOptions.forEach(opt => opt.classList.remove('selected'));
-            this.classList.add('selected');
-            selectedYear = this.getAttribute('data-year');
-            yearNextBtn.disabled = false;
+    if (yearOptions.length > 0 && yearNextBtn) {
+        yearOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                yearOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedYear = this.getAttribute('data-year');
+                yearNextBtn.disabled = false;
+            });
         });
-    });
     
-    yearNextBtn.addEventListener('click', function() {
-        const yearLevelModal = bootstrap.Modal.getInstance(document.getElementById('yearLevelModal'));
-        yearLevelModal.hide();
-        
-        const subjectsModal = new bootstrap.Modal(document.getElementById('subjectsModal'));
-        subjectsModal.show();
-    });
+        yearNextBtn.addEventListener('click', function() {
+            const yearLevelModalElement = document.getElementById('yearLevelModal');
+            if (yearLevelModalElement) {
+                const yearLevelModal = bootstrap.Modal.getInstance(yearLevelModalElement);
+                if (yearLevelModal) {
+                    yearLevelModal.hide();
+                }
+            }
+            
+            const subjectsModalElement = document.getElementById('subjectsModal');
+            if (subjectsModalElement) {
+                const subjectsModal = new bootstrap.Modal(subjectsModalElement);
+                if (subjectsModal) {
+                    subjectsModal.show();
+                }
+            }
+        });
+    }
     
     // Subject selection
     const subjectOptions = document.querySelectorAll('.subject-option');
     const saveSubjectsBtn = document.getElementById('saveSubjectsBtn');
     let selectedSubjects = [];
     
-    subjectOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            this.classList.toggle('selected');
-            
-            const subject = this.getAttribute('data-subject');
-            if (this.classList.contains('selected')) {
-                selectedSubjects.push(subject);
-            } else {
-                selectedSubjects = selectedSubjects.filter(s => s !== subject);
-            }
+    if (subjectOptions.length > 0 && saveSubjectsBtn) {
+        subjectOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                
+                const subject = this.getAttribute('data-subject');
+                if (this.classList.contains('selected')) {
+                    selectedSubjects.push(subject);
+                } else {
+                    selectedSubjects = selectedSubjects.filter(s => s !== subject);
+                }
+            });
         });
-    });
     
-    saveSubjectsBtn.addEventListener('click', function() {
-        // Make AJAX request to save selections
-        fetch('{{ url_for("save_profile") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({
-                year_level: selectedYear,
-                hsc_subjects: selectedSubjects.join(', ')
+        saveSubjectsBtn.addEventListener('click', function() {
+            // Make AJAX request to save selections
+            fetch('{{ url_for("save_profile") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    year_level: selectedYear,
+                    hsc_subjects: selectedSubjects.join(', ')
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update the display on the page
-                document.getElementById('display-year-level').textContent = selectedYear;
-                document.getElementById('display-subjects').textContent = selectedSubjects.join(', ');
-                
-                // Hide the modal
-                const subjectsModal = bootstrap.Modal.getInstance(document.getElementById('subjectsModal'));
-                subjectsModal.hide();
-                
-                // Show success message
-                alert('Profile updated successfully!');
-            } else {
-                alert('Error saving profile: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while saving your profile.');
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the display on the page
+                    const displayYearLevel = document.getElementById('display-year-level');
+                    if (displayYearLevel) displayYearLevel.textContent = selectedYear;
+                    
+                    const displaySubjects = document.getElementById('display-subjects');
+                    if (displaySubjects) displaySubjects.textContent = selectedSubjects.join(', ');
+                    
+                    // Hide the modal
+                    const subjectsModalElement = document.getElementById('subjectsModal');
+                    if (subjectsModalElement) {
+                        const subjectsModal = bootstrap.Modal.getInstance(subjectsModalElement);
+                        if (subjectsModal) {
+                            subjectsModal.hide();
+                        }
+                    }
+                    
+                    // Show success message
+                    alert('Profile updated successfully!');
+                } else {
+                    alert('Error saving profile: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving your profile.');
+            });
         });
-    });
+    }
 });
 </script>
 {% endblock %}

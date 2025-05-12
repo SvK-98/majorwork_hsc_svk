@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_login import LoginManager, login_required, current_user
 from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
@@ -39,6 +39,9 @@ def create_app(config_name=None):
     # Register blueprints
     from .auth.views import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
+
+    from .main.views import main as main_blueprint # Assuming you'll have a 'main' blueprint for profile
+    app.register_blueprint(main_blueprint)
     
     # Ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
@@ -46,6 +49,11 @@ def create_app(config_name=None):
     @app.route('/')
     def index():
         return render_template('index.html')
+    
+    @app.route('/profile')
+    @login_required
+    def profile():
+        return redirect(url_for('main.profile_settings'))
     
     @app.route('/dashboard')
     @login_required
@@ -78,6 +86,110 @@ def create_app(config_name=None):
         except Exception as e:
             db.session.rollback()
             app.logger.error(f"Error saving profile: {str(e)}")
+            return jsonify({'success': False, 'message': str(e)}), 500
+    
+    @app.route('/my-subjects')
+    @login_required
+    def my_subjects():
+        # Check if the user has selected subjects already
+        show_subject_selector = False
+        if not current_user.hsc_subjects:
+            show_subject_selector = True
+        
+        # Dictionary of subjects with their topics
+        subjects = {
+            'Math': {
+                'topics': [
+                    {'name': 'Calculus', 'emoji': '📊'},
+                    {'name': 'Algebra', 'emoji': '🔢'},
+                    {'name': 'Geometry', 'emoji': '📐'},
+                    {'name': 'Trigonometry', 'emoji': '📏'},
+                    {'name': 'Statistics', 'emoji': '📈'}
+                ],
+                'total': 18
+            },
+            'Software': {
+                'topics': [
+                    {'name': 'Python Programming', 'emoji': '🐍'},
+                    {'name': 'Web Development', 'emoji': '🌐'},
+                    {'name': 'Data Structures', 'emoji': '🗃️'},
+                    {'name': 'Algorithms', 'emoji': '⚙️'},
+                    {'name': 'Software Engineering', 'emoji': '💻'}
+                ],
+                'total': 22
+            },
+            'English': {
+                'topics': [
+                    {'name': 'Literature', 'emoji': '📚'},
+                    {'name': 'Grammar', 'emoji': '✏️'},
+                    {'name': 'Essay Writing', 'emoji': '📝'},
+                    {'name': 'Poetry', 'emoji': '🎭'},
+                    {'name': 'Speech & Debate', 'emoji': '🗣️'}
+                ],
+                'total': 15
+            },
+            'Business Studies': {
+                'topics': [
+                    {'name': 'Marketing', 'emoji': '📢'},
+                    {'name': 'Finance', 'emoji': '💰'},
+                    {'name': 'Management', 'emoji': '👔'},
+                    {'name': 'Entrepreneurship', 'emoji': '🚀'},
+                    {'name': 'Business Ethics', 'emoji': '⚖️'}
+                ],
+                'total': 16
+            },
+            'Economics': {
+                'topics': [
+                    {'name': 'Microeconomics', 'emoji': '🏪'},
+                    {'name': 'Macroeconomics', 'emoji': '🏙️'},
+                    {'name': 'International Trade', 'emoji': '🌍'},
+                    {'name': 'Fiscal Policy', 'emoji': '📊'},
+                    {'name': 'Economic Development', 'emoji': '📈'}
+                ],
+                'total': 14
+            },
+            'Physics': {
+                'topics': [
+                    {'name': 'Mechanics', 'emoji': '⚙️'},
+                    {'name': 'Thermodynamics', 'emoji': '🔥'},
+                    {'name': 'Electromagnetism', 'emoji': '⚡'},
+                    {'name': 'Quantum Physics', 'emoji': '🔬'},
+                    {'name': 'Relativity', 'emoji': '🚀'}
+                ],
+                'total': 20
+            }
+        }
+        return render_template('my_subjects.html', subjects=subjects, show_subject_selector=show_subject_selector)
+    
+    @app.route('/topic/<subject>/<topic>')
+    @login_required
+    def topic(subject, topic):
+        return render_template('topic.html', subject=subject, topic=topic)
+        
+    @app.route('/save-subjects', methods=['POST'])
+    @login_required
+    def save_subjects():
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+            
+        try:
+            selected_subjects = data.get('subjects')
+            
+            if not selected_subjects:
+                return jsonify({'success': False, 'message': 'No subjects selected'}), 400
+                
+            current_user.hsc_subjects = ','.join(selected_subjects)
+            
+            db.session.add(current_user)
+            db.session.commit()
+            
+            app.logger.info(f"Updated subjects for user {current_user.email}: Subjects={selected_subjects}")
+            return jsonify({'success': True})
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error saving subjects: {str(e)}")
             return jsonify({'success': False, 'message': str(e)}), 500
     
     return app

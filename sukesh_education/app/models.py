@@ -16,13 +16,18 @@ class User(db.Model, UserMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Profile and educational information
-    year_level = db.Column(db.String(20), nullable=True)  # Year 11 or Year 12
     hsc_subjects = db.Column(db.String(500), nullable=True)  # Comma-separated list of subjects
     
-    def __init__(self, email, name=None, year_level=None, hsc_subjects=None):
+    # Additional profile fields
+    profile_picture = db.Column(db.String(200), nullable=True)  # URL to profile picture
+    date_of_birth = db.Column(db.Date, nullable=True)
+    address = db.Column(db.String(200), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    
+    def __init__(self, email, name=None, hsc_subjects=None):
         self.email = email
         self.name = name
-        self.year_level = year_level
         self.hsc_subjects = hsc_subjects
     
     def set_password(self, password):
